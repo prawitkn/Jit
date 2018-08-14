@@ -1,6 +1,3 @@
-<?php
-	include 'inc_helper.php'; 
-?>
 <!DOCTYPE html>
 <!--
 This is a starter template page. Use this page to start your new project from
@@ -13,9 +10,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	//if(isset($_GET['year'])) $year = $_GET['year'];
 	//if(isset($_GET['month'])) $month = $_GET['month'];
 ?>
-<?php 
-	include 'head.php'; 
-?>
+<?php include 'head.php'; ?>
+
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini sidebar-collapse">
 
 <div class="wrapper">
 
@@ -26,34 +25,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
    <?php include 'leftside.php'; ?>
    <?php
 	$rootPage = 'config';
-	$tb="cadet18_person";
-	$reWms=1;
-	if(isset($_GET['reWms'])){
-		if($_GET['reWms']==1){
+	$tb="";
+	$resetDb=1;
+	if(isset($_GET['resetDb'])){
+		if($_GET['resetDb']==1){
 			try{
 				$pdo->beginTransaction();
-				$arr = array("TRUNCATE TABLE delivery_detail"	
-				, "TRUNCATE TABLE delivery_prod"	
-				, "TRUNCATE TABLE delivery_header"	
-				, "DELETE FROM doc_running WHERE name IN ('send','receive','picking','prepare','delivery','return')"	
-				, "TRUNCATE TABLE prepare_detail"	
-				, "TRUNCATE TABLE prepare"	
-				, "TRUNCATE TABLE picking_detail"	
-				, "TRUNCATE TABLE picking"	
-				, "TRUNCATE TABLE product_item"	
-				, "TRUNCATE TABLE receive_detail"	
-				, "TRUNCATE TABLE receive"	
-				, "TRUNCATE TABLE rt_detail"	
-				, "TRUNCATE TABLE rt"	
-				, "TRUNCATE TABLE send_detail"	
-				, "TRUNCATE TABLE send"	
-				, "TRUNCATE TABLE send_detail_mssql"	
-				, "TRUNCATE TABLE send_mssql"	
-				, "TRUNCATE TABLE send_scan"	
-				, "TRUNCATE TABLE shelf_movement_detail"	
-				, "TRUNCATE TABLE shelf_movement"	
-				, "TRUNCATE TABLE stk_bal"	
-				, "TRUNCATE TABLE wh_shelf_map_item"	
+				$arr = array("TRUNCATE TABLE jit_data"
+				, "UPDATE `jit_time` SET `QueueTime`='2018-08-14 08:00', `QtyTotal`=0, `InBit`=0, `OutBit`=0 "		
 				);
 				foreach ($arr as $value) {
 					$stmt = $pdo->prepare($value);
@@ -64,9 +43,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 				$pdo->rollBack();
 				echo $e;
 			}
-		$reWms=0;
-		}//is reWms=1
-	}//isset reWms
+		$resetDb=0;
+		}//is resetDb=1
+	}//isset resetDb
 	
 	$reInvite=0;
 	if(isset($_GET['reInvite'])){
@@ -111,16 +90,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div><!-- /.box-header -->
         <div class="box-body">            
             <div class="row">                
-					<div class="col-md-6">		
+					<div class="col-md-6">
+						<h3>Reset Database for Setup</h3>		
 						<form id="form1"  onsubmit="return confirm('Do you really want to submit the form?');" >
-						<input type="hidden" name="reWms" value="<?=$reWms;?>" />
-                        <button id="btn_reset_check_in" type="submit" class="btn btn-primary">Reset WMS</button>
+						<input type="hidden" name="resetDb" value="<?=$resetDb;?>" />
+
+						<div class="form-group col-md-6">
+                            <label for="queueTime">Queue Time : Y-m-d H:i</label>
+                            <input id="queueTime" type="text" class="form-control" name="queueTime" data-smk-msg="Require Queue Time" placeholder="2018-09-22 13:30" required>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                       	 <button id="btn_reset_check_in" type="submit" class="btn btn-primary">Reset Database</button>
+                        </div>
+
 						</form>
 					</div>
-					<div class="col-md-6">		
-						<form id="form1"  onsubmit="return confirm('Do you really want to submit the form?');" >
-						<input type="hidden" name="reInvite" value="<?=$reInvite;?>" />
-                        <button id="btn_reset_invite" type="submit" class="btn btn-primary">Reset Invite</button>
+					<div class="col-md-6">
+						<h3>Update Next Queue Time : </h3>		
+						<form id="form1"  onsubmit="return confirm('Do you really want to submit the form?');" >						
+						<input type="hidden" name="resetDb" value="<?=$resetDb;?>" />
+
+						<div class="form-group col-md-6">
+                            <label for="queueTime">Queue Time : Y-m-d H:i</label>
+                            <input id="queueTime" type="text" class="form-control" name="queueTime" data-smk-msg="Require Queue Time" placeholder="2018-09-22 13:30" required>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                       	 <button id="btn_reset_check_in" type="submit" class="btn btn-primary">Reset Database</button>
+                        </div>
+
 						</form>
 					</div>
 					<!--/.col-md-->
@@ -158,12 +157,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <script> 
 $(document).ready(function() {
-	$('#form1').on("submit", function(e) {
-		if(!confirm("Are you sure?")){
-			return false;
-		);
-		e.preventDefault();
-	});
 	
 });
 //doc ready

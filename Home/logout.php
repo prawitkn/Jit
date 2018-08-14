@@ -3,7 +3,7 @@
 include 'session.php';
 
 if (session_destroy()) {
-	$sql ="UPDATE cr_user SET loginStatus=0, SID='' WHERE userId=:s_userId ";
+	$sql ="UPDATE ".$dtPrefix."user SET loginStatus=0, SID='' WHERE userId=:s_userId ";
 	$stmt = $pdo->prepare($sql);
 	$stmt->bindParam(':s_userId', $s_userId);
 	$stmt->execute();

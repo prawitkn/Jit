@@ -102,7 +102,7 @@ switch($s_userGroupCode){
 							<label for="userGroupCode">User Group</label>
 							<select id="userGroupCode" name="userGroupCode" class="form-control"  data-smk-msg="Require User Group" required>
 								<?php
-								$sql = "SELECT `Id`, `Code`, `Name`, `StatusId`  FROM `cr_user_group` WHERE StatusId=1 ";							
+								$sql = "SELECT `Id`, `Code`, `Name`, `StatusId`  FROM `".$dtPrefix."user_group` WHERE StatusId=1 ";							
 								$stmt = $pdo->prepare($sql);		
 								$stmt->execute();
 								while($row = $stmt->fetch()){

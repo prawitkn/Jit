@@ -35,12 +35,11 @@ switch($s_userGroupCode){
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
 	<section class="content-header">
-		<h1><i class="fa fa-users"></i>
-       User
-        <small>User management</small>
+		<h1>
+		ลงทะเบียนผู้มารับพระราชทานหมวกกับผ้าพันคอ [ผู้ใช้งานระบบ : <?=$s_userFullname;?> ]
       </h1>
 	  <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-list"></i>User List</a></li>
+        <li class="active"><a href="index.php"><i class="fa fa-dashboard"></i> หน้าแรก</a></li>
       </ol>
     </section>
 
@@ -49,10 +48,9 @@ switch($s_userGroupCode){
 
 <!-- To allow only admin to access the content -->      
     <div class="box box-primary">
-        <div class="box-header with-border">
-        	<label class="box-tittle" style="font-size: 20px;"><i class="fa fa-list"></i> User list</label>
-
-			<a href="<?=$rootPage;?>Add.php?id=" class="btn btn-primary"><i class="fa fa-plus"></i> Add user</a>
+        <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">สรุปยอด</h3>
 		
 		
         <div class="box-tools pull-right">
@@ -64,20 +62,24 @@ switch($s_userGroupCode){
                // $count_user = mysqli_fetch_assoc($result_user);
 				
 				$search_word="";
-                $sql = "SELECT COUNT(*) AS countTotal 
-				FROM `".$dtPrefix."user` hdr 
-				LEFT JOIN `".$dtPrefix."user` uc on uc.userId=hdr.CreateUserId 
-				LEFT JOIN `".$dtPrefix."user` uu on uu.userId=hdr.UpdateUserId 
-				";
+                $sql = "
+				SELECT hdr.code, hdr.name, hdr.qtyMax
+				,(SELECT SUM(x.qty) FROM jit_data x WHERE x.GroupId=hdr.Id) AS qtyCheckIn
+				FROM jit_group hdr ";
+				if(isset($_GET['search_word']) and isset($_GET['search_word'])){
+					$search_word=$_GET['search_word'];
+					$sql .= "and (hdr.userFullname like '%".$_GET['search_word']."%' ) ";
+				}
+				$sql.="GROUP BY hdr.code, hdr.name, hdr.qtyMax ";
 				if(isset($_GET['search_word']) and isset($_GET['search_word'])){
 					$search_word=$_GET['search_word'];
 					$sql .= "and (hdr.name like '%".$_GET['search_word']."%' ) ";
 				}
 				$stmt = $pdo->prepare($sql);	
 				$stmt->execute();			
-				$countTotal=$stmt->fetch()['countTotal'];
+				$countTotal=$stmt->rowCount();
 
-				$rows=20;
+				$rows=500;
 				$page=0;
 				if( !empty($_GET["page"]) and isset($_GET["page"]) ) $page=$_GET["page"];
 				if($page<=0) $page=1;
@@ -91,47 +93,19 @@ switch($s_userGroupCode){
         </div><!-- /.box-tools -->
         </div><!-- /.box-header -->
         <div class="box-body">
-				<form id="form1" action="<?=$rootPage;?>.php" method="get" class="form form-inline" novalidate>
 				
-					<div class="row">
-							<div class="col-md-3">					
-								<label for="search_word">search key word.</label>
-								<input id="search_word" type="text" name="search_word" class="form-control" data-smk-msg="Require userFullname."required>
-								
-								
-							</div>  
-							<!--/.col-md-->
-							
-							<div class="col-md-1">
-								<label for="submit">&nbsp;</label>
-								<input type="submit" name="submit" class="btn btn-default" value="ค้นหา">
-							</div>  
-							<!--/.col-md-->
-					</div>
-					<!--/.row-->
-			
-			
-				</form>
-				<!--/.form1-->
 			
            <?php
 				$sql = "
-				SELECT hdr.`userId`, hdr.`userName`, hdr.`userPassword`, hdr.`userPin`, hdr.`userFullname`, hdr.`userGroupCode`, hdr.`userDeptCode`
-				, hdr.`userEmail`, hdr.`userTel`, hdr.`userPicture`, hdr.`StatusId`, hdr.`CreateTime`, hdr.`CreateUserId`, hdr.`UpdateTime`, hdr.`UpdateUserId`
-				, hdr.`loginStatus`, hdr.`lastLoginTime`, hdr.`SID`
-				, ug.Name as userGroupName 
-				, uc.userFullname as CreateUserName 
-				, uu.userFullname as UpdateUserName 
-				FROM `".$dtPrefix."user` hdr 
-				INNER JOIN `".$dtPrefix."user_group` ug ON hdr.userGroupCode=ug.Id 
-				LEFT JOIN `".$dtPrefix."user` uc on uc.userId=hdr.CreateUserId 
-				LEFT JOIN `".$dtPrefix."user` uu on uu.userId=hdr.UpdateUserId 
-				WHERE 1=1 ";
+				SELECT hdr.code, hdr.name, hdr.qtyMax
+				,(SELECT SUM(x.qty) FROM jit_data x WHERE x.GroupId=hdr.Code) AS qtyCheckIn
+				FROM jit_group hdr ";
 				if(isset($_GET['search_word']) and isset($_GET['search_word'])){
 					$search_word=$_GET['search_word'];
 					$sql .= "and (hdr.userFullname like '%".$_GET['search_word']."%' ) ";
-				}	
-				$sql .= "ORDER BY hdr.userId ASC
+				}
+				$sql.="GROUP BY hdr.code, hdr.name, hdr.qtyMax ";
+				$sql .= "ORDER BY hdr.code, hdr.name  ASC
 						LIMIT $start, $rows 
 				";		
                 //$result = mysqli_query($link, $sql);
@@ -142,72 +116,29 @@ switch($s_userGroupCode){
             <div class="row col-md-12 table-responsive">
             <table class="table table-hover">
                 <thead><tr style="background-color: #797979;">
-					<th>No.</th>					
-                    <th>Picture</th>
-                    <th>UserName</th>					
-                    <th>Full Name</th>
-					<th>Group</th>
-                    <th>Status</th>
-                    <th>#</th>
-                    <th></th>
+					<th style="text-align: center;">ลำดับ</th>		
+                    <th style="text-align: center;">หน่วย</th>					
+                    <th style="text-align: center;">ลงทะเบียนจาก ทม.</th>
+					<th style="text-align: center;">เข้าร่วมพิธี</th>
+					<th style="text-align: center;">ไม่เข้าร่วมพิธี</th>
                 </tr></thead>
                 <?php $c_row=($start+1); while ($row = $stmt->fetch()) { 
 						?>
                 <tr>
-					<td>
+					<td style="text-align: center;">
                          <?= $c_row; ?>
                     </td>
-					<td>
-						<img class="img-circle" src="./dist/img/<?php echo (empty($row['userPicture'])? 'default-50x50.gif' : $row['userPicture']) ?> " width="32px" height="32px" >
-					</td>
                     <td>
-                         <?= $row['userName']; ?>
+                         <?= $row['name']; ?>
                     </td>
-                    <td>
-                         <?= $row['userFullname']; ?>
+                    <td style="text-align: center;">
+                         <?= $row['qtyMax']; ?>
+                    </td>			
+                    <td style="text-align: center;">
+                         <?= $row['qtyCheckIn']; ?>
                     </td>				
-                    <td>
-                         <?= $row['userGroupName']; ?>
-                    </td>
-                    <td>
-						 <?php
-						 switch($row['StatusId']){ 	
-							case 1 :
-								echo '<a class="btn btn-success" name="btn_row_setActive" data-statusId="2" data-Id="'.$row['userId'].'" >Active</a>';
-								break;
-							case 2 :
-								echo '<a class="btn btn-default" name="btn_row_setActive" data-statusId="1" data-Id="'.$row['userId'].'" >Inactive</a>';
-								break;
-							case 3 : 
-								echo '<label style="color: red;" >Removed</label>';
-								break;
-							default :	
-								echo '<label style="color: red;" >N/A</label>';
-						}
-						 ?>
-                    </td>					
-                    <td>
-						
-						<?php if($row['StatusId']==1){ ?>
-							<a class="btn btn-primary" name="btn_row_edit" href="<?=$rootPage;?>Edit.php?act=edit&Id=<?= $row['userId']; ?>" >
-								<i class="fa fa-edit"></i> Edit</a>	
-						<?php }else{ ?>	
-							<a class="btn btn-primary"  disabled  > 
-								<i class="fa fa-edit"></i> Edit</a>	
-						<?php } ?>
-						
-						<?php if($row['StatusId']==2){ ?>
-							<a class="btn btn-danger" name="btn_row_remove"  data-Id="<?=$row['userId'];?>" > 
-								<i class="fa fa-remove"></i> Remove</a>	
-						<?php }else{ ?>	
-							<a class="btn btn-danger"  disabled  >
-								<i class="fa fa-remove"></i> Remove</a>	
-						<?php } ?>
-						
-						<?php if($row['StatusId']==3 AND ($s_userGroupCode==1)){ ?>
-							<a class="btn btn-danger" name="btn_row_delete"  data-Id="<?=$row['userId'];?>" > 
-								<i class="fa fa-trash"></i> Delete</a>	
-						<?php } ?>
+                    <td style="text-align: center;">
+                         <?= $row['qtyMax']-$row['qtyCheckIn']; ?>
                     </td>
                 </tr>
                 <?php $c_row+=1; } ?>

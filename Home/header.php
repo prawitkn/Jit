@@ -3,9 +3,9 @@
     <!-- Logo -->
     <a href="index.php" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-	  <span class="logo-mini"><img src="../asset/img/ak-logo2.png" class="img-circle" width=45px; height=45px; alt=""></span>
+	  <span class="logo-mini"><i class="fa fa-home"></i></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>DAG</b> Calculate Retire</span>
+      <span class="logo-lg"><b>DAG</b> Jit Ar Sa 2018</span>
     </a>
 
     <!-- Header Navbar -->
@@ -24,10 +24,19 @@
           <!-- User Account Menu -->
           <li class="dropdown user user-menu">
             <!-- Menu Toggle Button -->
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <!-- The user image in the navbar-->
+              <img src="dist/img/<?php echo (empty($s_userPicture)? 'default-50x50.gif' : $s_userPicture) ?> " class="user-image" alt="<?= $s_userFullname ?>">
+              <!-- hidden-xs hides the username on small devices so only the image appears. -->
+              <span class="hidden-xs"><?= $s_userFullname ?></span>
+            </a>
             <ul class="dropdown-menu">
               <!-- The user image in the menu -->
-              <li class="user-header">               
+              <li class="user-header">
+                <img src="dist/img/<?php echo (empty($s_userPicture)? 'default-50x50.gif' : $s_userPicture) ?> " class="img-circle" alt="<?= $s_userFullname ?>">
+
                 <p>
+                  <?= $s_userFullname ?>
 <!--                  <small>June 2017</small> 
                 </p>
               </li>

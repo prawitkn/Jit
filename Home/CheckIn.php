@@ -40,7 +40,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	<div class="box box-primary">
         <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">บันทึคิวเข้าร่วมพิธี</h3>
+              <h3 class="box-title">บันทึกคิวเข้าร่วมพิธี</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -68,7 +68,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group row">	
-							<label for="barcode" class="col-md-6  col-form-label">รหัส</label>
+							<label for="barcode" class="col-md-6  col-form-label">คิวที่</label>
 							<div class="col-md-6">
 							<input type="text" name="barcode" id="barcode" class="form-control" id="inputEmail3" placeholder="9999">
 							</div>
@@ -103,7 +103,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 						</div>
 
 						<div class="form-group row">	
-							<label for="barcode2" class="col-md-6  col-form-label">รหัส (ยืนยัน)</label>
+							<label for="barcode2" class="col-md-6  col-form-label">คิวที่ (เพื่อยืนยัน)</label>
 							<div class="col-md-6">
 							<input type="text" name="barcode2" id="barcode2" class="form-control" >
 							</div>		
@@ -226,14 +226,18 @@ $(document).ready(function() {
 					text: data.message,
 					type: 'success'
 				});				
-				$html='<div class="alert alert-success alert-dismissible  fade in">'+
+				$html='<div class="alert alert-success alert-dismissible">'+
 						'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'+
-						'<h4><i class="icon fa fa-check"></i> เรียบร้อย!</h4>'+
-						$('#groupName').text()+' : '+$('#qty').val()+' คน'+
-						'<a name="btnDelete"  data-Id="'+$('#barcode').val()+'" ><i class="fa fa-trash"></i> ย้อนกลับ'+$('#barcode').val()+'</a>'+
+						'<h4><i class="icon fa fa-check"></i> เรียบร้อย!&nbsp;&nbsp;&nbsp;'+
+						$('#groupName').text()+' : '+$('#qty').val()+' นาย</h4>'+
+						'<a href="#" name="btnDelete" class="btn btn-danger"  data-Id="'+$('#barcode').val()+'" ><i class="fa fa-trash"></i> ย้อนกลับ</a>'+
 					  '</div>';
 						  
-				$('#result').prepend($html);
+				$($html).hide().prependTo("#result").fadeIn("slow");		  
+				$( "#result div:nth-child(4)" ).fadeOut('slow');
+				//$itm=$.parseJSON(data.itm);
+				
+				$('#barcode').focus().select();
 				
 				//$itm=$.parseJSON(data.itm);
 				

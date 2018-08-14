@@ -49,34 +49,60 @@ scratch. This page gets rid of all links and provides the needed markup only.
          
         </div><!-- /.box-tools -->
         </div><!-- /.box-header -->
-        <div class="box-body">  
+        <div class="box-body" style="font-size: 20px;">  
         	<div class="row col-md-12">
-        		<div class="col-md-8">
+        		<div class="col-md-6">
+        			<div class="row col-md-12" style="background-color: #ffff80; margin: 5px;">
 					<table id="tblData" class="table table-striped">
 						<thead>
-							<td>ลำดับที่</td>
-							<td>หน่วย</td>
-							<td>จำนวน ลงทะเบียน</td>
-							<td>คิวที่</td>
+							<tr>
+							<td style="text-align: center;">ลำดับที่</td>
+							<td style="text-align: center;">หน่วย</td>
+							<td style="text-align: center;">จำนวน ลงทะเบียน</td>
+							<td style="text-align: center; font-weight: bold;">คิวที่</td>
+							</tr>
 						</thead>
 						<tbody>
 						</tbody>
 					</table>
+					</div>
 				</div>
-				<div class="col-md-4">
-					<div class="row col-md-12">
-						<div class="col-md-8">ยอดจาก ทม. ทั้งหมด</div>
-						<div class="col-md-4"><label id="lblTotal" class="pull-right">0</label></div>
-						<div class="col-md-8">ยังไม่ได้ลงทะเบียนรับคิว</div>
-						<div class="col-md-4"><label id="lblUnRegister" class="pull-right">0</label></div>
-						<div class="col-md-8">.</div>
-						<div class="col-md-4"><label id="" class="pull-right">.</label></div>
-						<div class="col-md-8">ลงทะเบียนรับคิวแล้ว</div>
-						<div class="col-md-4"><label id="lblRegister" class="pull-right">0</label></div>
-						<div class="col-md-8">รับคิว และเข้าร่วมพิธีแล้ว</div>
-						<div class="col-md-4"><label id="lblCheckIn" class="pull-right">0</label></div>
-						<div class="col-md-8">รับคิว และรอเรียกเข้าร่วมพิธี</div>
-						<div class="col-md-4"><label id="lblUnCheckIn" class="pull-right">0</label></div>
+				<div class="col-md-6">
+					<div class="row col-md-12" style="background-color: #80ffff; margin: 5px;">
+						<table id="tblSummary" width="100%">
+							<thead>
+							<tr>
+								<td style="text-align: center;">รายการ</td>
+								<td style="text-align: center;">จำนวน</td>
+							</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td style="color: black;">ยอดจาก ทม. ทั้งหมด</td>
+									<td style="color: black; text-align: right;"><label id="lblTotal" class="pull-right">0</label></td>
+								</tr>
+								<tr>
+									<td style="color: red;">ยังไม่ได้ลงทะเบียนรับคิว</td>
+									<td style="color: red; text-align: right;"><label id="lblUnRegister" class="pull-right">0</label></td>
+								</tr>
+								<tr>
+									<td style="color: red;"></td>
+									<td style="color: red; text-align: right;">&nbsp;</td>
+								</tr>
+								<tr>
+									<td style="color: green;">ลงทะเบียนรับคิวแล้ว</td>
+									<td style="color: green; text-align: right;"><label id="lblRegister" class="pull-right">0</label></td>
+								</tr>
+								<tr>
+									<td style="color: blue;">รับคิว และเข้าร่วมพิธีแล้ว</td>
+									<td style="color: blue; text-align: right;"><label id="lblCheckIn" class="pull-right">0</label></td>
+								</tr>
+								<tr>
+									<td style="color: orange;">รับคิว และรอเรียกเข้าร่วมพิธี</td>
+									<td style="color: orange; text-align: right;"><label id="lblUnCheckIn" class="pull-right">0</label></td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
      		</div>
@@ -118,7 +144,16 @@ $(document).ready(function() {
 	//setTimeout(function(){ getList(); }, 5000);
 	
 	//setInterval( getList(), 5000);
-	
+	/**
+	 * Number.prototype.format(n, x)
+	 * 
+	 * @param integer n: length of decimal
+	 * @param integer x: length of sections
+	 */
+	Number.prototype.format = function(n, x) {
+	    var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
+	    return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
+	};
 	
 	function getList(){		
 		var params = {
@@ -147,14 +182,16 @@ $(document).ready(function() {
 							$rowNo=1;
 							$.each($.parseJSON(data.data), function(key,value){
 								$('#tblData').append(
-									'<tr><td>'+$rowNo+'</td>'+
-									'<td>'+value.GroupName+'</td>'+
-									'<td>'+value.Qty+'</td>'+
-									'<td>'+value.Id+'</td></tr>');
+									'<tr>'+
+									'<td style="text-align: center;">'+$rowNo+'</td>'+
+									'<td style="text-align: left;">'+value.GroupName+'</td>'+
+									'<td style="text-align: center;">'+value.Qty+'</td>'+
+									'<td style="text-align: center; font-weight: bold; font-size: 24px;">'+value.Id+'</td></tr>');
 								$rowNo+=1;
 							});
 							$('#tblData tbody').fadeIn('slow');
 
+							$('#tblSummary tbody').fadeOut('slow');
 							itm=$.parseJSON(data.data2);							
 							qtyRemain=itm.totalQtyMax-itm.totalRegister;
 							qtyCheckInRemain=itm.totalRegister-itm.totalCheckIn;
@@ -162,7 +199,9 @@ $(document).ready(function() {
 							$('#lblUnRegister').text(qtyRemain);
 							$('#lblRegister').text(itm.totalRegister);
 							$('#lblCheckIn').text(itm.totalCheckIn);
-							$('#lblUnCheckIn').text(qtyCheckInRemain);
+							$('#lblUnCheckIn').text(qtyCheckInRemain);							
+							$('#tblSummary tbody').fadeIn('slow');
+
 					}//.switch
 			  }   
 			}).error(function (response) {
@@ -172,9 +211,16 @@ $(document).ready(function() {
 	
 	getList();
 
-	//setTimeout(function() {
-    //    getList();
-   // }, 10000);
+    var counter = 0;
+	var i = setInterval(function(){
+	    // do your thing
+	    getList();
+
+	    counter++;
+	    if(counter === 10) {
+	        clearInterval(i);
+	    }
+	}, 20000);	//20Minute
 
 });
 //doc ready

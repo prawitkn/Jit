@@ -14,7 +14,7 @@
 					, jg.Name as GroupName, cu.userFullname as CreateUserName 
 					FROM `jit_data` jd
 					INNER JOIN `jit_group` jg ON jg.Code=jd.GroupId 
-					INNER JOIN `cr_user` cu ON cu.userId=jd.CreateUserId
+					INNER JOIN `".$dtPrefix."user` cu ON cu.userId=jd.CreateUserId
 					WHERE jd.CheckInTime IS NULL 
 					ORDER BY jd.Id 
 					LIMIT 10";

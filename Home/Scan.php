@@ -100,7 +100,7 @@ function sqlDateToThaiDate($sqlDate){
                 <form id="form1" action="Preview.php" method="post" class="form" validate>
 				
 				<input type="hidden" name="action" value="add" />
-				<input type="hidden" name="qytPrev" id="qtyPrev" value="0" />
+				<input type="hidden" name="qtyRemain" id="qtyRemain" value="0" />
 				
 				<div class="row">
 					<div class="col-md-6">
@@ -231,7 +231,7 @@ $(document).ready(function() {
 				//alert(data.rowCount);								
 				itm=$.parseJSON(data.data);
 				if (data.rowCount==1) {					
-					$('#qtyPrev').val(itm.qtyPrev);	
+					$('#qtyRemain').val(itm.qtyMax-itm.qtyPrev);	
 					$('#groupName').text(itm.Name);
 					$('#qtyMax').text(""+itm.qtyMax+' / '+itm.qtyPrev);							
 					
@@ -239,7 +239,7 @@ $(document).ready(function() {
 				}else{
 					$('#groupName').text('Null');
 					$('#qtyMax').text('0 / 0');		
-					$('#qtyPrev').val(itm.qtyPrev);									
+					$('#qtyRemain').val(0);									
 					
 					$('#barcode').focus().select();
 				}				
@@ -268,7 +268,7 @@ $(document).ready(function() {
 				//alert(data.rowCount);								
 				itm=$.parseJSON(data.data);
 				if (data.rowCount==1) {					
-					$('#qtyPrev').val(itm.qtyPrev);	
+					$('#qtyRemain').val(itm.qtyPrev);	
 					$('#groupName').text(itm.Name);
 					$('#qtyMax').text(""+itm.qtyMax+' / '+itm.qtyPrev);							
 					
@@ -276,7 +276,7 @@ $(document).ready(function() {
 				}else{
 					$('#groupName').text('Null');
 					$('#qtyMax').text('0 / 0');		
-					$('#qtyPrev').val(itm.qtyPrev);									
+					$('#qtyRemain').val(itm.qtyPrev);									
 					
 					$('#barcode').focus().select();
 				}				
@@ -290,11 +290,10 @@ $(document).ready(function() {
 	}//.getGroup
 	
 	function save(){
-		if( $('#qtyPrev').val() < $('#qty').val() ){
-			$.smkAlert({
-				text: 'การทำงานผิดพลา ไม่สามารถลงทะเบียนเกินยอดคงเหลือได้.',
-				type: 'Warning'
-			});
+		if( parseInt($('#qtyRemain').val(),10) < parseInt($('#qty').val(),10) ){
+			alert('ไม่สามารถลงทะเบียนเกินยอดคงเหลือได้');
+			$('#qty').focus().select();
+			return false;
 		}
 		var params = {
 			action: 'save',

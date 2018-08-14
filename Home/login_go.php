@@ -6,12 +6,12 @@ $userName = $_POST['userName'];
 $userPassword = $_POST['userPassword'];
 
 //Update last login time
-$sql = "UPDATE cr_user SET loginStatus=0 WHERE NOW() > lastLoginTime + INTERVAL 30 MINUTE   ";		
+$sql = "UPDATE ".$dtPrefix."user SET loginStatus=0 WHERE NOW() > lastLoginTime + INTERVAL 30 MINUTE   ";		
 $stmt = $pdo->prepare($sql);
 $stmt->execute();	
 	
 //Get user 
-$sql = "SELECT * FROM cr_user WHERE userName=:userName LIMIT 1";		
+$sql = "SELECT * FROM ".$dtPrefix."user WHERE userName=:userName LIMIT 1";		
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':userName', $userName);
 $stmt->execute();
@@ -42,7 +42,7 @@ if($stmt->rowCount() == 1){
 			$SID = session_id();
 			setcookie("SID", $SID, time()+3600);	//3600=1Hour; 1800=30Min; 60=1Min
 			
-			$sql = "UPDATE cr_user SET loginStatus=1, lastLoginTime=NOW(), SID=:SID WHERE userId=:s_userId ";		
+			$sql = "UPDATE ".$dtPrefix."user SET loginStatus=1, lastLoginTime=NOW(), SID=:SID WHERE userId=:s_userId ";		
 			$stmt = $pdo->prepare($sql);
 			$stmt->bindParam(':SID', $SID);
 			$stmt->bindParam(':s_userId', $s_userId);

@@ -1,7 +1,7 @@
 <?php
     include 'session.php';	
 		
-	$tb='cr_user';
+	$tb=$dtPrefix."user";
 	
 	if(!isset($_POST['action'])){		
 		header('Content-Type: application/json');
