@@ -8,15 +8,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <?php include 'head.php'; 
 $rootPage = 'User';
 $tb = $dtPrefix."user";
-
-//Check user roll.
-switch($s_userGroupCode){
-	case 1 :
-		break;
-	default : 
-		header('Location: access_denied.php');
-		exit();
-}
 ?>	<!-- head.php included session.php! -->
  
     
@@ -93,9 +84,11 @@ switch($s_userGroupCode){
         </div><!-- /.box-tools -->
         </div><!-- /.box-header -->
         <div class="box-body">
-				
+			<div class="row col-md-12">	
 			
-           <?php
+           
+            <div class="col-md-8 table-responsive">
+        	<?php
 				$sql = "
 				SELECT hdr.code, hdr.name, hdr.qtyMax
 				,(SELECT SUM(x.qty) FROM jit_data x WHERE x.GroupId=hdr.Code) AS qtyCheckIn
@@ -113,12 +106,12 @@ switch($s_userGroupCode){
 				$stmt->execute();	
                 
            ?> 
-            <div class="row col-md-12 table-responsive">
             <table class="table table-hover">
-                <thead><tr style="background-color: #797979;">
-					<th style="text-align: center;">ลำดับ</th>		
+                <thead><tr style="background-color: #ffff80;">
+					<th style="text-align: center;">ลำดับ</th>			
+                    <th style="text-align: center;">รหัส</th>	
                     <th style="text-align: center;">หน่วย</th>					
-                    <th style="text-align: center;">ลงทะเบียนจาก ทม.</th>
+                    <th style="text-align: center;">ยอดลงทะเบียนจาก มท.</th>
 					<th style="text-align: center;">เข้าร่วมพิธี</th>
 					<th style="text-align: center;">ไม่เข้าร่วมพิธี</th>
                 </tr></thead>
@@ -127,6 +120,9 @@ switch($s_userGroupCode){
                 <tr>
 					<td style="text-align: center;">
                          <?= $c_row; ?>
+                    </td>
+                    <td>
+                         <?= $row['code']; ?>
                     </td>
                     <td>
                          <?= $row['name']; ?>
@@ -161,6 +157,67 @@ switch($s_userGroupCode){
 			</nav>
 			
 			</div>
+			<!--/.col-md-8-->
+
+			<div class="col-md-4">
+				<?php
+					$sql = "
+					SELECT left(hdr.code,1) as code, sum(hdr.qtyMax) as qtyMax 
+					,(SELECT SUM(x.qty) FROM jit_data x WHERE left(x.GroupId,1)=left(hdr.code,1)) AS qtyCheckIn
+					FROM jit_group hdr ";
+					if(isset($_GET['search_word']) and isset($_GET['search_word'])){
+						$search_word=$_GET['search_word'];
+						$sql .= "and (hdr.userFullname like '%".$_GET['search_word']."%' ) ";
+					}
+					$sql.="GROUP BY left(hdr.code,1) ";
+					$sql .= "ORDER BY left(hdr.code,1)  ASC
+							LIMIT $start, $rows 
+					";		
+	                //$result = mysqli_query($link, $sql);
+					$stmt = $pdo->prepare($sql);	
+					$stmt->execute();	
+	                
+	           ?> 
+	            <table class="table table-hover">
+	                <thead><tr style="background-color: #80ffff;">
+						<th style="text-align: center;">ลำดับ</th>		
+	                    <th style="text-align: center;">หน่วย</th>					
+	                    <th style="text-align: center;">ยอดลงทะเบียนจาก มท.</th>
+						<th style="text-align: center;">เข้าร่วมพิธี</th>
+						<th style="text-align: center;">ไม่เข้าร่วมพิธี</th>
+	                </tr></thead>
+	                <?php $c_row=($start+1); while ($row = $stmt->fetch()) { 
+							?>
+	                <tr>
+						<td style="text-align: center;">
+	                         <?= $c_row; ?>
+	                    </td>
+	                    <td>
+	                    	<?php switch($row['code']){
+	                    		case '1' : echo 'สป.'; break;
+	                    		case '2' : echo 'ทท.'; break;
+	                    		case '3' : echo 'ทบ.'; break;
+	                    		case '4' : echo 'ทร.'; break;
+	                    		case '5' : echo 'ทอ.'; break;
+	                    		default : echo 'อื่นๆ'; 
+	                    	} ?>	                    	
+	                    </td>
+	                    <td style="text-align: center;">
+	                         <?= $row['qtyMax']; ?>
+	                    </td>			
+	                    <td style="text-align: center;">
+	                         <?= $row['qtyCheckIn']; ?>
+	                    </td>				
+	                    <td style="text-align: center;">
+	                         <?= $row['qtyMax']-$row['qtyCheckIn']; ?>
+	                    </td>
+	                </tr>
+	                <?php $c_row+=1; } ?>
+	            </table>
+			</div>
+			<!--/.col-md-2-->
+		</div>
+		<!--/.row col-md-12-->
     </div><!-- /.box-body -->
   <div class="box-footer">
       

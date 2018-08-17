@@ -13,14 +13,19 @@
       <!-- Sidebar toggle button-->
       <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
         <span class="sr-only">Toggle navigation</span>
+		
       </a>
-	  
+	  <label style="font-size: 20px; padding-top:10px; color: white;"> ระบบลงทะเบียนรับหมวกและผ้าพันคอจิตอาสา <span style="font-size: 14px;">โดย กรมสารบรรณทหาร กองบัญชาการกองทัพไทย</span></label>
 	  
 	  
       <!-- Navbar Right Menu -->
       <div class="navbar-custom-menu">
+		<ul class="nav navbar-nav">
+			<li>
+			</li>
+		</ul>
         <ul class="nav navbar-nav">
-          
+			
           <!-- User Account Menu -->
           <li class="dropdown user user-menu">
             <!-- Menu Toggle Button -->
@@ -30,6 +35,7 @@
               <!-- hidden-xs hides the username on small devices so only the image appears. -->
               <span class="hidden-xs"><?= $s_userFullname ?></span>
             </a>
+			
             <ul class="dropdown-menu">
               <!-- The user image in the menu -->
               <li class="user-header">

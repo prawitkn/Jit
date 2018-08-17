@@ -10,7 +10,7 @@
 		switch($_POST['action']){
 			case 'getData' :
 				try{	
-					$sql = "SELECT jd.`Id`, jd.`GroupId`, jd.`Qty`, jd.`Remark`, jd.`CreateTime`, jd.`CreateUserId` 
+					$sql = "SELECT jd.`Id`, jd.`GroupId`, jd.`Qty`, jd.`Remark`, jd.`CreateTime`,DATE_FORMAT(jd.QueueTime,'%H:%i') QueueTime, jd.`CreateUserId` 
 					, jg.Name as GroupName, cu.userFullname as CreateUserName 
 					FROM `jit_data` jd
 					INNER JOIN `jit_group` jg ON jg.Code=jd.GroupId 

@@ -97,7 +97,33 @@
 					$Id = $_POST['Id'];
 					
 					//$pdo->beginTransaction();
+					$sql = "SELECT `Id`, `QueueTime`, `QtyTotal`, `InBit`, `OutBit` FROM `jit_time` ";
+					$stmt = $pdo->prepare($sql);
+					$stmt->execute();
+					$row=$stmt->fetch();
 
+					$queueTime=$row['QueueTime'];
+					$qtyTotal=$row['QtyTotal'];
+					$qtyCalc=$qty+$row['InBit'];
+					$ratio=ceil($qtyCalc/18);
+					
+					$bit=$qtyCalc%18;
+
+					$addMin='+ '.($ratio*2).' minutes';
+					$nextTime=$queueTime;
+					$nextTime=strtotime($nextTime);
+					$nextTime=date("Y-m-d H:i:s", strtotime($addMin, $nextTime));
+
+					$qtyTotal+=$qty;
+
+					$sql = "UPDATE `jit_time` SET `QueueTime`=:QueueTime, `QtyTotal`=:QtyTotal, `InBit`=:InBit ";
+					$stmt = $pdo->prepare($sql);
+					$stmt->bindParam(':QueueTime', $nextTime); 
+					$stmt->bindParam(':QtyTotal', $qtyTotal); 
+					$stmt->bindParam(':InBit', $bit); 
+					$stmt->execute();
+
+					
 					$sql = "DELETE FROM jit_data WHERE Id=:Id ";
 					$stmt = $pdo->prepare($sql);
 					$stmt->bindParam(':Id', $Id);

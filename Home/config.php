@@ -30,9 +30,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	if(isset($_GET['resetDb'])){
 		if($_GET['resetDb']==1){
 			try{
+				$queueTime=$_GET['queueTime'];
+				$queueTime=date('Y-m-d H:i', strtotime($queueTime));
+
 				$pdo->beginTransaction();
 				$arr = array("TRUNCATE TABLE jit_data"
-				, "UPDATE `jit_time` SET `QueueTime`='2018-08-14 08:00', `QtyTotal`=0, `InBit`=0, `OutBit`=0 "		
+				, "UPDATE `jit_time` SET `QueueTime`='".$queueTime."', `QtyTotal`=0, `InBit`=0, `OutBit`=0 "		
 				);
 				foreach ($arr as $value) {
 					$stmt = $pdo->prepare($value);

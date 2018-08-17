@@ -42,7 +42,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <!-- Your Page Content Here -->
 	<div class="box box-primary">
         <div class="box-header with-border">
-        <h3 class="box-title">ลำดับคิว</h3>
+        <h3 class="box-title">ลำดับคิวการลงทะเบียนรับหมวกและผ้าพันคอพระราชทาน</h3>
         <div class="box-tools pull-right">
           <!-- Buttons, labels, and many other things can be placed here! -->
           <!-- Here is a label for example -->
@@ -51,7 +51,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div><!-- /.box-header -->
         <div class="box-body" style="font-size: 20px;">  
         	<div class="row col-md-12">
-        		<div class="col-md-6">
+        		<div class="col-md-8">
         			<div class="row col-md-12" style="background-color: #ffff80; margin: 5px;">
 					<table id="tblData" class="table table-striped">
 						<thead>
@@ -59,7 +59,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 							<td style="text-align: center;">ลำดับที่</td>
 							<td style="text-align: center;">หน่วย</td>
 							<td style="text-align: center;">จำนวน ลงทะเบียน</td>
-							<td style="text-align: center; font-weight: bold;">คิวที่</td>
+							<td style="text-align: center; font-weight: bold; width: 150px; important!">คิวที่ / เวลา</td>
 							</tr>
 						</thead>
 						<tbody>
@@ -67,7 +67,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 					</table>
 					</div>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-4">
 					<div class="row col-md-12" style="background-color: #80ffff; margin: 5px;">
 						<table id="tblSummary" width="100%">
 							<thead>
@@ -78,7 +78,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 							</thead>
 							<tbody>
 								<tr>
-									<td style="color: black;">ยอดจาก ทม. ทั้งหมด</td>
+									<td style="color: black;">ยอดลงทะเบียนจาก มท.</td>
 									<td style="color: black; text-align: right;"><label id="lblTotal" class="pull-right">0</label></td>
 								</tr>
 								<tr>
@@ -98,8 +98,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 									<td style="color: blue; text-align: right;"><label id="lblCheckIn" class="pull-right">0</label></td>
 								</tr>
 								<tr>
-									<td style="color: orange;">รับคิว และรอเรียกเข้าร่วมพิธี</td>
-									<td style="color: orange; text-align: right;"><label id="lblUnCheckIn" class="pull-right">0</label></td>
+									<td style="color: #ff4dff;">รับคิว และรอเรียกเข้าร่วมพิธี</td>
+									<td style="color: #ff4dff; text-align: right;"><label id="lblUnCheckIn" class="pull-right">0</label></td>
 								</tr>
 							</tbody>
 						</table>
@@ -118,7 +118,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	
 	</div>
 	<!--content-wrapper-->
-
+	
+	<!-- Main Footer -->
+  <?php include'footer.php'; ?>
+  
 </div>
 <!--warpper-->
 
@@ -186,7 +189,7 @@ $(document).ready(function() {
 									'<td style="text-align: center;">'+$rowNo+'</td>'+
 									'<td style="text-align: left;">'+value.GroupName+'</td>'+
 									'<td style="text-align: center;">'+value.Qty+'</td>'+
-									'<td style="text-align: center; font-weight: bold; font-size: 24px;">'+value.Id+'</td></tr>');
+									'<td style="text-align: center; font-weight: bold; font-size: 32px;"><span style="color: red;">'+value.Id+'</span> / <small>'+value.QueueTime+'</small></td></tr>');
 								$rowNo+=1;
 							});
 							$('#tblData tbody').fadeIn('slow');

@@ -74,6 +74,9 @@
 
 
 <style>
+
+@import url(./plugins/fontAwesome/fonts/thsarabunnew.css);
+
   @font-face {
     font-family: 'THSarabunNew';
     src: url('thsarabunnew-webfont.eot');
@@ -117,9 +120,9 @@
     font-style: normal;
 
 }
-
-
-body {
+	
+body, h1, h2, h3, h4, h5, h6 {
   font-family: 'THSarabunNew', sans-serif;
+  font-weight: bold;
 }
 </style>

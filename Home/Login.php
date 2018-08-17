@@ -26,13 +26,16 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 </head>
-<body class="hold-transition login-page" style="background-color: #85e085; ">
+<body class="hold-transition login-page" style="background-color: #80ffff; ">
+    <div class="box" style="text-align: center; color: blue;">
+     <h1>ระบบลงทะเบียนผู้มารับหมวกกับผ้าพันคอจิตอาสา</h1>
+    </div>
+
 <div class="login-box">
   <div class="login-logo">
-    <a href="#"><b>DAG</b> ระบบลงทะเบียนผู้มารับหมวกกับผ้าพันคอจิตอาสา</a>
   </div>
   <!-- /.login-logo -->
-  <div class="login-box-body">
+  <div class="login-box-body" style="background-color: #ffff80;">
     <p class="login-box-msg">ลงชื่อเข้าใช้</p>
     <form id="form1" action="login_go.php" method="post" novalidate>
       <div class="form-group has-feedback">
@@ -77,7 +80,7 @@ $(document).ready(function() {
 	   if($('#form1').smkValidate()) {
 //alert("Ok validate");   
 			$.post("login_go.php", $("#form1").serialize() )
-					.done(function(data) { alert(data);
+					.done(function(data) { //alert(data);
 						if (data.status === "danger") {
 // alert("danger message");            
 							$.smkAlert({text: data.message, type: data.status});

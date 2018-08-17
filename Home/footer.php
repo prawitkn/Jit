@@ -1,3 +1,3 @@
 <footer class="main-footer" style="text-align: center;">
-    <strong> DAG Calculate Retire &copy;2018 <a href="http://dag.rtarf.mi.th">dag.rtarf.mi.th</a></strong>
+    <strong> ระบบลงทะเบียนรับหมวกและผ้าพันคอจิตอาสา &copy;2018&nbsp;&nbsp;&nbsp;จัดทำโดย <a href="http://dag.rtarf.mi.th">กรมสารบรรณทหาร กองบัญชาการกองทัพไทย</a></strong>
 </footer>
