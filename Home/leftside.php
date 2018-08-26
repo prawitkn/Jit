@@ -8,7 +8,8 @@
 		<li class="header">เมนู</li>    
     <li><a href="Scan.php?"><i class="fa fa-barcode"></i> <span>ลงทะเบียน</span></a></li> 
     <li><a href="CheckIn.php?"><i class="fa fa-arrow-down"></i> <span>บันทึกเข้าร่วมพิธี</span></a></li> 
-    <li><a href="RptSummary.php?"><i class="fa fa-file"></i> <span>สรุปยอดเข้าร่วมพิธี</span></a></li> 
+    <li><a href="RptSummary.php?"><i class="fa fa-file"></i> <span>สรุปยอดเข้าร่วมพิธี</span></a></li>     
+    <li><a href="RptSummary2.php?"><i class="fa fa-file"></i> <span>สรุปยอดเข้าร่วมพิธี รวม</span></a></li> 
 
     <?php switch($s_userGroupCode){  case 1 : ?>
 		<li class="header">เจ้าหน้าที่ดูแลระบบ</li>		

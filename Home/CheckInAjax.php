@@ -38,8 +38,9 @@
 				$barcode = $_POST['barcode'];
 				$qty = $_POST['qty'];
 
-				$sql = "UPDATE jit_data SET CheckInTime=NOW(), CheckInUserId=:CheckInUserId WHERE Id=:Id ";
+				$sql = "UPDATE jit_data SET QtyCheckIn=:QtyCheckIn, CheckInTime=NOW(), CheckInUserId=:CheckInUserId WHERE Id=:Id ";
 				$stmt = $pdo->prepare($sql);
+				$stmt->bindParam(':QtyCheckIn', $qty);
 				$stmt->bindParam(':CheckInUserId', $s_userId);
 				$stmt->bindParam(':Id', $barcode); 
 			 

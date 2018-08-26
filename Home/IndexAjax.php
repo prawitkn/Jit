@@ -30,7 +30,9 @@
 					$sql = "SELECT SUM(qtyMax) as totalQtyMax
 					,(SELECT SUM(qty) FROM jit_data) AS totalRegister
 					,(SELECT SUM(qty) FROM jit_data WHERE CheckInTime IS NOT NULL) AS totalCheckIn
-					FROM `jit_group` WHERE 1";
+					FROM `jit_group` WHERE 1
+					";
+					//AND left(CreateTime,10)=DATE_FORMAT(NOW(),'%Y-%m-%d') 
 					$stmt = $pdo->prepare($sql);
 					$stmt->execute();
 					
