@@ -26,6 +26,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
    <?php
 	$rootPage = 'config';
 	$tb="";
+
 	$resetDb=1;
 	if(isset($_GET['resetDb'])){
 		if($_GET['resetDb']==1){
@@ -49,19 +50,56 @@ scratch. This page gets rid of all links and provides the needed markup only.
 		$resetDb=0;
 		}//is resetDb=1
 	}//isset resetDb
-	
-	$reInvite=0;
-	if(isset($_GET['reInvite'])){
-		$sql = "UPDATE `".$tb."` SET isInvite=0 WHERE group2Name LIKE '%เสียชีวิต%' ";
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute();	
 		
-		$sql = "UPDATE `".$tb."` SET isInvite=1 WHERE group2Name NOT LIKE '%เสียชีวิต%' ";
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute();	
-		$reInvite=0;
-	}//isset reInvite
-	
+
+	$resetQueueTime=1;
+	if(isset($_GET['resetQueueTime'])){
+		if($_GET['resetQueueTime']==1){
+			try{
+				$queueTime=$_GET['queueTime'];
+				$queueTime=date('Y-m-d H:i', strtotime($queueTime));
+
+				$pdo->beginTransaction();
+				$arr = array("UPDATE `jit_time` SET `QueueTime`='".$queueTime."', `QtyTotal`=0, `InBit`=0, `OutBit`=0 "		
+				);
+				foreach ($arr as $value) {
+					$stmt = $pdo->prepare($value);
+					echo $stmt->execute();	
+				}	
+				$pdo->commit();
+			}catch(Exception $e){
+				$pdo->rollBack();
+				echo $e;
+			}
+		$resetQueueTime=0;
+		}//is resetQueueTime=1
+	}//isset resetQueueTime
+
+
+	$dailyBackup=1;
+	if(isset($_GET['dailyBackup'])){
+		if($_GET['dailyBackup']==1){
+			try{
+				$queueTime=$_GET['queueTime'];
+				$queueTime=date('Y-m-d H:i', strtotime($queueTime));
+
+				$pdo->beginTransaction();
+				$arr = array("INSERT INTO jit_data_history (`Id`, `GroupId`, `Qty`, `QtyCheckIn`, `QueueTime`, `Remark`, `CreateTime`, `CreateUserId`, `CheckInTime`, `CheckInUserId`)  
+					SELECT * FROM jit_data WHERE Id NOT IN (SELECT Id FROM jit_data_history) "		
+				);
+				foreach ($arr as $value) {
+					$stmt = $pdo->prepare($value);
+					echo $stmt->execute();	
+				}	
+				$pdo->commit();
+			}catch(Exception $e){
+				$pdo->rollBack();
+				echo $e;
+			}
+		$dailyBackup=0;
+		}//is dailyBackup=1
+	}//isset dailyBackup
+
    ?>
 
   <!-- Content Wrapper. Contains page content -->
@@ -93,43 +131,62 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div><!-- /.box-header -->
         <div class="box-body">            
             <div class="row">                
-					<div class="col-md-6">
-						<h3>Reset Database for Setup</h3>		
-						<form id="form1"  onsubmit="return confirm('Do you really want to submit the form?');" >
-						<input type="hidden" name="resetDb" value="<?=$resetDb;?>" />
+				<div class="col-md-6">
+					<h3>Reset Database for Setup</h3>		
+					<form id="form1"  onsubmit="return confirm('Do you really want to submit the form?');" >
+					<input type="hidden" name="resetDb" value="<?=$resetDb;?>" />
 
-						<div class="form-group col-md-6">
-                            <label for="queueTime">Queue Time : Y-m-d H:i</label>
-                            <input id="queueTime" type="text" class="form-control" name="queueTime" data-smk-msg="Require Queue Time" placeholder="2018-09-22 13:30" required>
-                        </div>
+					<div class="form-group col-md-6">
+                        <label for="queueTime">Queue Time : Y-m-d H:i</label>
+                        <input id="queueTime" type="text" class="form-control" name="queueTime" data-smk-msg="Require Queue Time" placeholder="2018-09-22 13:30" required>
+                    </div>
 
-                        <div class="form-group col-md-6">
-                       	 <button id="btn_reset_check_in" type="submit" class="btn btn-primary">Reset Database</button>
-                        </div>
+                    <div class="form-group col-md-6">
+                   	 <button name="btn_reset_check_in" type="submit" class="btn btn-primary">Reset Database</button>
+                    </div>
 
-						</form>
-					</div>
-					<div class="col-md-6">
-						<h3>Update Next Queue Time : </h3>		
-						<form id="form1"  onsubmit="return confirm('Do you really want to submit the form?');" >						
-						<input type="hidden" name="resetDb" value="<?=$resetDb;?>" />
+					</form>
+				</div>
+				<div class="col-md-6">
+					<h3>Update Next Queue Time : </h3>		
+					<form id="form2"  onsubmit="return confirm('Do you really want to submit the form?');" >						
+					<input type="hidden" name="resetQueueTime" value="<?=$resetQueueTime;?>" />
 
-						<div class="form-group col-md-6">
-                            <label for="queueTime">Queue Time : Y-m-d H:i</label>
-                            <input id="queueTime" type="text" class="form-control" name="queueTime" data-smk-msg="Require Queue Time" placeholder="2018-09-22 13:30" required>
-                        </div>
+					<div class="form-group col-md-6">
+                        <label for="queueTime">Queue Time : Y-m-d H:i</label>
+                        <input id="queueTime" type="text" class="form-control" name="queueTime" data-smk-msg="Require Queue Time" placeholder="2018-09-22 13:30" required>
+                    </div>
 
-                        <div class="form-group col-md-6">
-                       	 <button id="btn_reset_check_in" type="submit" class="btn btn-primary">Reset Database</button>
-                        </div>
+                    <div class="form-group col-md-6">
+                   	 <button name="btnResetQueueTime" type="submit" class="btn btn-primary">Reset Queue Time</button>
+                    </div>
 
-						</form>
-					</div>
-					<!--/.col-md-->
-                </div>
-                <!--/.row-->       
+					</form>
+				</div>
+				<!--/.col-md-->
             </div>
-			<!--.body-->    
+            <!--/.row-->    
+
+            <div class="row">                
+				<div class="col-md-6">
+					<h3>Daily Backup</h3>		
+					<form id="form1"  onsubmit="return confirm('Do you really want to submit the form?');" >
+					<input type="hidden" name="dailyBackup" value="<?=$dailyBackup;?>" />
+
+                    <div class="form-group col-md-6">
+                   	 <button name="btnDailyBackup" type="submit" class="btn btn-primary">Daily Backup</button>
+                    </div>
+
+					</form>
+				</div>
+				<div class="col-md-6">
+
+				</div>
+				<!--/.col-md-->
+            </div>
+            <!--/.row-->     
+        </div>
+		<!--.body-->    
     </div>
 	<!-- /.box box-primary -->
 	

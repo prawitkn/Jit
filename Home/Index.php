@@ -59,7 +59,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 							<td style="text-align: center;">ลำดับที่</td>
 							<td style="text-align: center;">หน่วย</td>
 							<td style="text-align: center;">จำนวน ลงทะเบียน</td>
-							<td style="text-align: center; font-weight: bold; width: 150px; important!">คิวที่ / เวลา</td>
+							<td style="text-align: center; font-weight: bold; width: 200px; important!">คิวที่ / เวลา</td>
 							</tr>
 						</thead>
 						<tbody>
@@ -220,10 +220,11 @@ $(document).ready(function() {
 	    getList();
 
 	    counter++;
-	    if(counter === 10) {
-	        clearInterval(i);
+	    if(counter === 360) {
+	        //clearInterval(i);
+			location.reload();
 	    }
-	}, 20000);	//20Minute
+	}, 10000);	//20sec 
 
 });
 //doc ready
