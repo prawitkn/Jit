@@ -89,17 +89,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
 						</div>
 
 						<div class="form-group row">	
+							<label for="qty" class="col-md-6  col-form-label">จำนวน มาลงทะเบียนครั้งนี้</label>
+							<div class="col-md-6">
+							<input type="text" name="qty" id="qty" class="form-control" placeholder="9999" onkeypress="return numbersOnly(this, event);" 
+								onpaste="return false;" style="text-align: right;">
+							</div>		
+						</div>
+
+						<div class="form-group row">	
 							<label for="remark" class="col-md-6  col-form-label">หมายเลขโทรศัพท์ผู้ควบคุมยอดครั้งนี้</label>
 							<div class="col-md-6">
 							<label name="remark" id="remark">-</label>
 							</div>						
-						</div>
-
-						<div class="form-group row">	
-							<label for="qty" class="col-md-6  col-form-label">จำนวน มาลงทะเบียนครั้งนี้</label>
-							<div class="col-md-6">
-							<input type="text" name="qty" id="qty" class="form-control" placeholder="9999">
-							</div>		
 						</div>
 
 						<div class="form-group row">	
@@ -177,13 +178,15 @@ $(document).ready(function() {
 				if (data.rowCount==1) {					
 					$('#groupName').text(itm.GroupName);	
 					$('#qtyMax').text(itm.qtyMax);		
-					$('#qty').val(itm.Qty);						
+					$('#qty').val(itm.QtyCheckIn);		
+					$('#remark').text(itm.Remark);
 					
-					$('#barcode2').select();
+					$('#qty').focus().select();
 				}else{
 					$('#groupName').text('-');	
-					$('#qtyMax').text('-');		
-					$('#qty').val('-');									
+					$('#qtyMax').text('0');		
+					$('#qty').val('0');		
+					$('#remark').text('-');
 					
 					$('#barcode').focus().select();
 				}				
@@ -202,10 +205,8 @@ $(document).ready(function() {
 		if( $('#qty').val()=="" || $('#qty').val()=="0" ){ alert('โปรดระบุจำนวน (Qty) '); $('#qty').select(); return false; }
 		if( $('#barcode2').val()=="" ){ alert('โปรดระบุรหัสยืนยัน (ID2) '); $('#barcode2').select(); return false; }
 		if( $('#barcode').val() != $('#barcode2').val() ){
-			$.smkAlert({
-				text: 'การทำงานผิดพลา รหัสยืนยันไม่ถูกต้อง.',
-				type: 'Warning'
-			});
+			
+			alert('ผิดพลาด รหัสคิว ยืนยัน ไม่ตรงกัน');
 			return false;
 		}
 		var params = {
@@ -270,7 +271,7 @@ $(document).ready(function() {
 	$('#qty').keyup(function(e){
 		if(e.keyCode == 13)
 		{	
-			$('#barcode2').val('0').focus().select();
+			$('#barcode2').focus().select();
 		}/* e.keycode=13 */	
 	});
 
@@ -314,6 +315,14 @@ $(document).ready(function() {
 	});
 });
 //doc ready
+</script>
+
+<!--Integers (non-negative)-->
+<script>
+  function numbersOnly(oToCheckField, oKeyEvent) {
+    return oKeyEvent.charCode === 0 ||
+        /\d/.test(String.fromCharCode(oKeyEvent.charCode));
+  }
 </script>
 
 

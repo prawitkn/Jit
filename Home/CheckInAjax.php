@@ -11,7 +11,7 @@
 			case 'getBarcode' :
 				try{	
 					$barcode = $_POST['barcode'];
-					$sql = "SELECT jd.`Id`, jd.`GroupId`, jd.`Qty`, jd.`Remark`, jd.`CreateTime`, jd.`CreateUserId`, jd.`CheckInTime`, jd.`CheckInUserId` 
+					$sql = "SELECT jd.`Id`, jd.`GroupId`, jd.`QtyCheckIn` as qty, jd.QtyCheckIn, jd.`Remark`, jd.`CreateTime`, jd.`CreateUserId`, jd.`CheckInTime`, jd.`CheckInUserId` 
 					,jg.Name as GroupName, jg.qtyMax 
 					FROM `jit_data` jd 
 					INNER JOIN jit_group jg ON jg.Code=jd.GroupId 

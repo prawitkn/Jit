@@ -20,11 +20,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
    <?php
 	$rootPage = 'Index';
 	$tb="";
+	//$issueDate=( isset($_GET['issueDate']) ? $_GET['issueDate'] : '' );
+
    ?>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1><i class="fa fa-home"></i>
+       หน้าแรก
+        <small></small>
+      </h1>
+	  <ol class="breadcrumb">
+        <li><a href="<?=$rootPage;?>.php"><i class="glyphicon glyphicon-list"></i>หน้าแรก</a></li>
+		<!--<li><a href="#"><i class="glyphicon glyphicon-edit"></i>View</a></li>-->
+      </ol>
+    </section>
 
     <!-- Main content -->
     <section class="content">
@@ -48,8 +60,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 							<tr>
 							<td style="text-align: center;">ลำดับที่</td>
 							<td style="text-align: center;">หน่วย</td>
-							<td style="text-align: center;">จำนวนคน</td>
-							<td style="text-align: center; font-weight: bold; width: 200px; important!">คิวที่ / เวลานัด</td>
+							<td style="text-align: center;">จำนวน ลงทะเบียน</td>
+							<td style="text-align: center; font-weight: bold; width: 200px; important!">คิวที่ / เวลา</td>
 							</tr>
 						</thead>
 						<tbody>
@@ -150,8 +162,9 @@ $(document).ready(function() {
 	
 	function getList(){		
 		var params = {
-			action: 'getData'
-		}; //alert(params.sendDate);
+			action: 'getData',
+			issueDate: '<?=$issueDate;?>'
+		}; alert(params.issueDate);
 		/* Send the data using post and put the results in a div */
 		  $.ajax({
 			  url: "IndexAjax.php",
@@ -166,6 +179,9 @@ $(document).ready(function() {
 					//alert(data);
 					//alert(data.rowCount);
 					switch(data.rowCount){
+						case 0 : alert('Data not found.');
+							//$('#tbl_items tbody').empty();
+							return false; break;
 						default : 							
 							//$('#tbl_items tbody').empty();
 							$('#tblData tbody').fadeOut('slow').empty();
@@ -176,7 +192,7 @@ $(document).ready(function() {
 									'<td style="text-align: center;">'+$rowNo+'</td>'+
 									'<td style="text-align: left;">'+value.GroupName+'</td>'+
 									'<td style="text-align: center;">'+value.Qty+'</td>'+
-									'<td style="text-align: center; font-weight: bold; font-size: 36px;"><span style="color: red;">'+value.Id+'<small style="font-size: 16px;"> / '+value.QueueTime+'</small></span></td></tr>');
+									'<td style="text-align: center; font-weight: bold; font-size: 32px;"><span style="color: red;">'+value.Id+'</span> / <small>'+value.QueueTime+'</small></td></tr>');
 								$rowNo+=1;
 							});
 							$('#tblData tbody').fadeIn('slow');

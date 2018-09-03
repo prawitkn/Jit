@@ -6,6 +6,8 @@
     }
     
 	include 'db/db.php';
+	
+	$lastQueue=138;
 			
     $s_userId=$_SESSION['userId'];
     $sql = "SELECT * FROM ".$dtPrefix."user WHERE userId='$s_userId' LIMIT 1";

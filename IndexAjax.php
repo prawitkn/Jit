@@ -14,7 +14,7 @@
 					, jg.Name as GroupName, cu.userFullname as CreateUserName 
 					FROM `jit_data` jd
 					INNER JOIN `jit_group` jg ON jg.Code=jd.GroupId 
-					INNER JOIN `jit_user` cu ON cu.userId=jd.CreateUserId
+					INNER JOIN `".$dtPrefix."user` cu ON cu.userId=jd.CreateUserId
 					WHERE jd.CheckInTime IS NULL 
 					ORDER BY jd.Id 
 					LIMIT 10";
@@ -28,12 +28,11 @@
 					}
 
 					$sql = "SELECT SUM(qtyMax) as totalQtyMax
-					,(SELECT SUM(qtyCheckIn) FROM jit_data) AS totalRegister
-					,(SELECT SUM(qtyCheckIn) FROM jit_data WHERE CheckInTime IS NOT NULL) AS totalCheckIn
-					FROM `jit_group` WHERE 1=1 
-					AND date(issueDate)=date(NOW()) 
+					,(SELECT SUM(qty) FROM jit_data) AS totalRegister
+					,(SELECT SUM(qty) FROM jit_data WHERE CheckInTime IS NOT NULL) AS totalCheckIn
+					FROM `jit_group` WHERE 1
 					";
-					
+					//AND left(CreateTime,10)=DATE_FORMAT(NOW(),'%Y-%m-%d') 
 					$stmt = $pdo->prepare($sql);
 					$stmt->execute();
 					

@@ -48,15 +48,17 @@ $tb = $dtPrefix."user";
           <!-- Buttons, labels, and many other things can be placed here! -->
           <!-- Here is a label for example -->
           <?php
-                //$sql_user = "SELECT COUNT(*) AS COUNTUSER FROM wh_user";
-               // $result_user = mysqli_query($link, $sql_user);
-               // $count_user = mysqli_fetch_assoc($result_user);
+                
+				$issueDate = ( isset($_GET['issueDate']) ? $_GET['issueDate'] : date("Y-m-d") );
 				
 				$search_word="";
                 $sql = "
 				SELECT hdr.code, hdr.name, hdr.qtyMax
-				,(SELECT SUM(x.qty) FROM jit_data x WHERE x.GroupId=hdr.Id) AS qtyCheckIn
-				FROM jit_group hdr ";
+				,(SELECT SUM(x.qty) FROM jit_data x WHERE x.GroupId=hdr.Id) AS qtyQueue
+				,(SELECT SUM(x.qtyCheckIn) FROM jit_data x WHERE x.GroupId=hdr.Id) AS qtyCheckIn
+				FROM jit_group hdr 
+				WHERE 1=1 ";
+				if ( $issueDate<> "" ) { $sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' "; }
 				if(isset($_GET['search_word']) and isset($_GET['search_word'])){
 					$search_word=$_GET['search_word'];
 					$sql .= "and (hdr.userFullname like '%".$_GET['search_word']."%' ) ";
@@ -65,7 +67,7 @@ $tb = $dtPrefix."user";
 				if(isset($_GET['search_word']) and isset($_GET['search_word'])){
 					$search_word=$_GET['search_word'];
 					$sql .= "and (hdr.name like '%".$_GET['search_word']."%' ) ";
-				}
+				} 
 				$stmt = $pdo->prepare($sql);	
 				$stmt->execute();			
 				$countTotal=$stmt->rowCount();
@@ -85,14 +87,42 @@ $tb = $dtPrefix."user";
         </div><!-- /.box-header -->
         <div class="box-body">
 			<div class="row col-md-12">	
-			
+				<form action="RptSummary2.php" method="get" >
+					<input type="text" name="issueDate" value="<?=$issueDate;?>" /> 
+					<input type="submit" value="ค้นหา">
+				</form>
            
             <div class="col-md-8 table-responsive">
         	<?php
 				$sql = "
 				SELECT hdr.code, hdr.name, hdr.qtyMax
-				,(SELECT SUM(x.qty) FROM jit_data x WHERE x.GroupId=hdr.Code) AS qtyCheckIn
-				FROM jit_group hdr ";
+				,(SELECT SUM(x.qty) FROM jit_data x WHERE x.GroupId=hdr.Code) AS qtyQueue
+				,(SELECT SUM(x.qtyCheckIn) FROM jit_data x WHERE x.GroupId=hdr.Code) AS qtyCheckIn
+				FROM jit_group hdr 
+				WHERE 1=1 ";
+
+				switch ($issueDate) {
+					case '2018-08-27':
+						$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' 
+								AND hdr.code<>'2042' ";
+						break;
+					case '2018-08-28':
+						$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' ";
+						break;
+					case '2018-08-29':
+						$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' ";
+						break;
+					case '2018-08-30':
+						$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' ";
+						break;
+					case '2018-08-31':
+						$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' ";
+						break;	
+					default:
+						# code...
+						break;
+				}
+
 				if(isset($_GET['search_word']) and isset($_GET['search_word'])){
 					$search_word=$_GET['search_word'];
 					$sql .= "and (hdr.userFullname like '%".$_GET['search_word']."%' ) ";
@@ -111,11 +141,12 @@ $tb = $dtPrefix."user";
 					<th style="text-align: center;">ลำดับ</th>			
                     <th style="text-align: center;">รหัส</th>	
                     <th style="text-align: center;">หน่วย</th>					
-                    <th style="text-align: center;">ยอดลงทะเบียนจาก มท.</th>
-					<th style="text-align: center;">เข้าร่วมพิธี</th>
-					<th style="text-align: center;">ไม่เข้าร่วมพิธี</th>
+                    <th style="text-align: center;">ยอดลงทะเบียนจาก มท.</th>					
+					<th style="text-align: center;">ยอดลงทะเบียนรับคิว</th>
+					<th style="text-align: center;">ยอดจริงเข้าร่วมพิธี</th>
+					<th style="text-align: center;">ยังไม่เข้าร่วมพิธี</th>
                 </tr></thead>
-                <?php $c_row=($start+1); while ($row = $stmt->fetch()) { 
+                <?php $c_row=($start+1); $sumQtyMax=$sumQtyQueue=$sumQtyCheckIn=$sumQtyRemain=0; while ($row = $stmt->fetch()) { 
 						?>
                 <tr>
 					<td style="text-align: center;">
@@ -127,17 +158,34 @@ $tb = $dtPrefix."user";
                     <td>
                          <?= $row['name']; ?>
                     </td>
-                    <td style="text-align: center;">
+                    <td style="text-align: right;">
                          <?= $row['qtyMax']; ?>
-                    </td>			
-                    <td style="text-align: center;">
+                    </td>	
+					<td style="text-align: right;">
+                         <?= $row['qtyQueue']; ?>
+                    </td>	
+                    <td style="text-align: right;">
                          <?= $row['qtyCheckIn']; ?>
                     </td>				
-                    <td style="text-align: center;">
+                    <td style="text-align: right;">
                          <?= $row['qtyMax']-$row['qtyCheckIn']; ?>
                     </td>
                 </tr>
-                <?php $c_row+=1; } ?>
+                <?php 
+                $c_row+=1; 
+            	$sumQtyMax+=$row['qtyMax'];
+            	$sumQtyQueue+=$row['qtyQueue'];
+				$sumQtyCheckIn+=$row['qtyCheckIn'];
+            	$sumQtyRemain+=($row['qtyMax']-$row['qtyCheckIn']);
+            	}//.end while 
+            	?>
+            	<tr>
+            		<td colspan="3">ยอดรวม</td>
+            		<td style="text-align: right;"><?=$sumQtyMax;?></td>
+            		<td style="text-align: right;"><?=$sumQtyQueue;?></td>
+            		<td style="text-align: right;"><?=$sumQtyCheckIn;?></td>
+            		<td style="text-align: right;"><?=$sumQtyRemain;?></td> 
+            	</tr>
             </table>
 				
 			<nav>
@@ -163,8 +211,33 @@ $tb = $dtPrefix."user";
 				<?php
 					$sql = "
 					SELECT left(hdr.code,1) as code, sum(hdr.qtyMax) as qtyMax 
-					,(SELECT SUM(x.qty) FROM jit_data x WHERE left(x.GroupId,1)=left(hdr.code,1)) AS qtyCheckIn
-					FROM jit_group hdr ";
+					,(SELECT SUM(x.qty) FROM jit_data x WHERE left(x.GroupId,1)=left(hdr.code,1)) AS qtyQueue
+					,(SELECT SUM(x.qtyCheckIn) FROM jit_data x WHERE left(x.GroupId,1)=left(hdr.code,1))  AS qtyCheckIn
+					FROM jit_group hdr 
+					WHERE 1=1 ";
+
+					switch ($issueDate) {
+						case '2018-08-27':
+							$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate'
+									AND hdr.code<>'2042' ";
+							break;
+						case '2018-08-28':
+							$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' ";
+							break;
+						case '2018-08-29':
+							$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' ";
+							break;
+						case '2018-08-30':
+							$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' ";
+							break;
+						case '2018-08-31':
+							$sql .= "AND DATE_FORMAT( hdr.issueDate, '%Y-%m-%d' )='$issueDate' ";
+							break;	
+						default:
+							# code...
+							break;
+					}
+
 					if(isset($_GET['search_word']) and isset($_GET['search_word'])){
 						$search_word=$_GET['search_word'];
 						$sql .= "and (hdr.userFullname like '%".$_GET['search_word']."%' ) ";
@@ -172,7 +245,8 @@ $tb = $dtPrefix."user";
 					$sql.="GROUP BY left(hdr.code,1) ";
 					$sql .= "ORDER BY left(hdr.code,1)  ASC
 							LIMIT $start, $rows 
-					";		
+					";
+					//echo $sql;
 	                //$result = mysqli_query($link, $sql);
 					$stmt = $pdo->prepare($sql);	
 					$stmt->execute();	

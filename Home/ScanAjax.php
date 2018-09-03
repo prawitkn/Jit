@@ -40,44 +40,34 @@
 				$pdo->beginTransaction();
 
 
-			 	$sql = "SELECT `Id`, `QueueTime`, `QtyTotal`, `InBit`, `OutBit` FROM `jit_time` ";
+			 	$sql = "SELECT SUM(qty) totoalPendingQty FROM jit_data WHERE CheckInTime IS NULL";
 				$stmt = $pdo->prepare($sql);
 				$stmt->execute();
 				$row=$stmt->fetch();
 
-				$queueTime=$row['QueueTime'];
-				$qtyTotal=$row['QtyTotal'];
-				$qtyCalc=$qty+$row['InBit'];
-				$ratio=ceil($qtyCalc/18);
+				$totoalPendingQty=$row['totoalPendingQty'];
+				$ratio=ceil($totoalPendingQty/18);
 				
-				$bit=$qtyCalc%18;
-
-				$addMin='+ '.($ratio*2).' minutes';
-				$nextTime=$queueTime;
-				$nextTime=strtotime($nextTime);
-				$nextTime=date("Y-m-d H:i:s", strtotime($addMin, $nextTime));
-
-				$qtyTotal+=$qty;
-
-				$sql = "UPDATE `jit_time` SET `QueueTime`=:QueueTime, `QtyTotal`=:QtyTotal, `InBit`=:InBit ";
-				$stmt = $pdo->prepare($sql);
-				$stmt->bindParam(':QueueTime', $nextTime); 
-				$stmt->bindParam(':QtyTotal', $qtyTotal); 
-				$stmt->bindParam(':InBit', $bit); 
-				$stmt->execute();
-
-
-				$sql = "INSERT INTO `jit_data`(`GroupId`, `Qty`, `QueueTime`, `Remark`, `CreateTime`, `CreateUserId`)  
-				VALUES (:GroupId,:Qty,:QueueTime,:Remark,NOW(),:CreateUserId)";
+				date_default_timezone_set('Asia/Bangkok');
+				$queueTime = date();
+				if($ratio>0){
+					$addMin='+ '.($ratio*2).' minutes';
+					$queueTime=date("Y-m-d H:i:s", strtotime($addMin));
+				}
+				
+				$sql = "INSERT INTO `jit_data`(`GroupId`, `Qty`,`QtyCheckIn`, `QueueTime`, `Remark`, `CreateTime`, `CreateUserId`)  
+				VALUES (:GroupId,:Qty,:QtyCheckIn,:QueueTime,:Remark,NOW(),:CreateUserId)";
 				$stmt = $pdo->prepare($sql);
 				$stmt->bindParam(':GroupId', $barcode); 
-				$stmt->bindParam(':Qty', $qty); 
+				$stmt->bindParam(':Qty', $qty); 				
+				$stmt->bindParam(':QtyCheckIn', $qty); 
 				$stmt->bindParam(':QueueTime', $queueTime); 
 				$stmt->bindParam(':Remark', $remark); 
 				$stmt->bindParam(':CreateUserId', $s_userId);
 			 	$stmt->execute();
 
 				$lastInsertId=$pdo->lastInsertId();
+				//$queueId=$lastInsertId-$lastQueue;
 
 				$pdo->commit();
 
@@ -97,33 +87,7 @@
 					$Id = $_POST['Id'];
 					
 					//$pdo->beginTransaction();
-					$sql = "SELECT `Id`, `QueueTime`, `QtyTotal`, `InBit`, `OutBit` FROM `jit_time` ";
-					$stmt = $pdo->prepare($sql);
-					$stmt->execute();
-					$row=$stmt->fetch();
-
-					$queueTime=$row['QueueTime'];
-					$qtyTotal=$row['QtyTotal'];
-					$qtyCalc=$qty+$row['InBit'];
-					$ratio=ceil($qtyCalc/18);
-					
-					$bit=$qtyCalc%18;
-
-					$addMin='+ '.($ratio*2).' minutes';
-					$nextTime=$queueTime;
-					$nextTime=strtotime($nextTime);
-					$nextTime=date("Y-m-d H:i:s", strtotime($addMin, $nextTime));
-
-					$qtyTotal+=$qty;
-
-					$sql = "UPDATE `jit_time` SET `QueueTime`=:QueueTime, `QtyTotal`=:QtyTotal, `InBit`=:InBit ";
-					$stmt = $pdo->prepare($sql);
-					$stmt->bindParam(':QueueTime', $nextTime); 
-					$stmt->bindParam(':QtyTotal', $qtyTotal); 
-					$stmt->bindParam(':InBit', $bit); 
-					$stmt->execute();
-
-					
+										
 					$sql = "DELETE FROM jit_data WHERE Id=:Id ";
 					$stmt = $pdo->prepare($sql);
 					$stmt->bindParam(':Id', $Id);

@@ -60,7 +60,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 				$queueTime=date('Y-m-d H:i', strtotime($queueTime));
 
 				$pdo->beginTransaction();
-				$arr = array("UPDATE `jit_time` SET `QueueTime`='".$queueTime."', `QtyTotal`=0, `InBit`=0, `OutBit`=0 "		
+				$arr = array("UPDATE `jit_time` SET `QueueTime`='".$queueTime."' "		
 				);
 				foreach ($arr as $value) {
 					$stmt = $pdo->prepare($value);
@@ -84,8 +84,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 				$queueTime=date('Y-m-d H:i', strtotime($queueTime));
 
 				$pdo->beginTransaction();
-				$arr = array("INSERT INTO jit_data_history (`Id`, `GroupId`, `Qty`, `QtyCheckIn`, `QueueTime`, `Remark`, `CreateTime`, `CreateUserId`, `CheckInTime`, `CheckInUserId`)  
-					SELECT * FROM jit_data WHERE Id NOT IN (SELECT Id FROM jit_data_history) "		
+				$arr = array("INSERT INTO jit_data_history (`GroupId`, `Qty`, `QtyCheckIn`, `QueueTime`, `Remark`, `CreateTime`, `CreateUserId`, `CheckInTime`, `CheckInUserId`)  
+					SELECT `GroupId`, `Qty`, `QtyCheckIn`, `QueueTime`, `Remark`, `CreateTime`, `CreateUserId`, `CheckInTime`, `CheckInUserId` FROM jit_data  "		
+					,"TRUNCATE TABLE jit_data "
 				);
 				foreach ($arr as $value) {
 					$stmt = $pdo->prepare($value);

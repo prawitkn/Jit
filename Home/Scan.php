@@ -124,7 +124,15 @@ function sqlDateToThaiDate($sqlDate){
 							<label name="qtyMax" id="qtyMax">0 / 0</label>
 							</div>
 						</div>
-
+						
+						<div class="form-group row">	
+							<label for="qty" class="col-md-6  col-form-label">จำนวน มาลงทะเบียนครั้งนี้</label>
+							<div class="col-md-6">
+							<input type="text" name="qty" id="qty" class="form-control" placeholder="9999" onkeypress="return numbersOnly(this, event);" 
+								onpaste="return false;" style="text-align: right;" />
+							</div>		
+						</div>
+						
 						<div class="form-group row">	
 							<label for="remark" class="col-md-6  col-form-label">หมายเลขโทรศัพท์ผู้ควบคุมยอดครั้งนี้</label>
 							<div class="col-md-6">
@@ -132,18 +140,13 @@ function sqlDateToThaiDate($sqlDate){
 							</div>						
 						</div>
 
-						<div class="form-group row">	
-							<label for="qty" class="col-md-6  col-form-label">จำนวน มาลงทะเบียนครั้งนี้</label>
-							<div class="col-md-6">
-							<input type="text" name="qty" id="qty" class="form-control" placeholder="9999">
-							</div>		
-						</div>
+						
 					</div>
 
 					<div class="col-md-6">
 						<div id="result" class="col-md-12">
 							<?php 
-							$sql = "SELECT jd.`Id`, jd.`GroupId`, jd.`Qty`, `QueueTime`, jd.`Remark`, jd.`CreateTime`, jd.`CreateUserId`, jd.`CheckInTime`, jd.`CheckInUserId` 
+							$sql = "SELECT jd.`Id`, jd.`Id`-".$lastQueue." as queueId, jd.`GroupId`, jd.`Qty`, `QueueTime`, jd.`Remark`, jd.`CreateTime`, jd.`CreateUserId`, jd.`CheckInTime`, jd.`CheckInUserId` 
 								,jg.Name as GroupName, jg.qtyMax 
 								FROM `jit_data` jd 
 								INNER JOIN jit_group jg ON jg.Code=jd.GroupId 
@@ -158,7 +161,7 @@ function sqlDateToThaiDate($sqlDate){
 								  echo '<div class="alert alert-success alert-dismissible">'.
 								'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'.
 								'<h4><i class="icon fa fa-check"></i> เรียบร้อย!&nbsp;&nbsp;&nbsp;'.$row['GroupName'].' : '.$row['Qty'].' นาย</h4>'.
-								'ลำดับที่ : <span style="font-size: 24pt;">'.$row['Id'].'</span>&nbsp;&nbsp;&nbsp;'.
+								'ลำดับที่ : <span style="font-size: 24pt;"><small>'.$row['Id'].'</small>/'.$row['queueId'].'</span>&nbsp;&nbsp;&nbsp;'.
 								'เวลาพร้อม : <span style="font-size: 24pt;">'.date('H:i',strtotime($row['QueueTime'])).'</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
 								'<a href="#" name="btnDelete" class="btn btn-danger"  data-Id="'.$row['Id'].'" ><i class="fa fa-trash"></i> ลบ</a>'.
 							  '</div>';
@@ -235,7 +238,7 @@ $(document).ready(function() {
 					$('#groupName').text(itm.Name);
 					$('#qtyMax').text(""+itm.qtyMax+' / '+itm.qtyPrev);							
 					
-					$('#remark').select();
+					$('#qty').focus().select();
 				}else{
 					$('#groupName').text('Null');
 					$('#qtyMax').text('0 / 0');		
@@ -252,49 +255,14 @@ $(document).ready(function() {
 		}); 
 	}//.getGroup
 
-	function getData(){
-		var params = {
-			action: 'getData',
-			Id: $('#Id').val()
-		}; //alert(params.barcode);
-		/* Send the data using post and put the results in a div */
-		if(params.barcode==""){ alert('โปรดระบุรหัส (Id)'); return false; }
-		$.post({
-			url: 'ScanAjax.php',
-			data: params,
-			dataType: 'json'
-		}).done(function (data) {					
-			if (data.success){ 				
-				//alert(data.rowCount);								
-				itm=$.parseJSON(data.data);
-				if (data.rowCount==1) {					
-					$('#qtyRemain').val(itm.qtyPrev);	
-					$('#groupName').text(itm.Name);
-					$('#qtyMax').text(""+itm.qtyMax+' / '+itm.qtyPrev);							
-					
-					$('#remark').select();
-				}else{
-					$('#groupName').text('Null');
-					$('#qtyMax').text('0 / 0');		
-					$('#qtyRemain').val(itm.qtyPrev);									
-					
-					$('#barcode').focus().select();
-				}				
-			} else {
-				alert(data.message);
-				$('#barcode').select();
-			}
-		}).error(function (response) {
-			alert(response.responseText);
-		}); 
-	}//.getGroup
+	
 	
 	function save(){
-		if( parseInt($('#qtyRemain').val(),10) < parseInt($('#qty').val(),10) ){
+		/*if( parseInt($('#qtyRemain').val(),10) < parseInt($('#qty').val(),10) ){
 			alert('ไม่สามารถลงทะเบียนเกินยอดคงเหลือได้');
 			$('#qty').focus().select();
 			return false;
-		}
+		}*/
 		var params = {
 			action: 'save',
 			barcode: $('#barcode').val(),
@@ -324,8 +292,10 @@ $(document).ready(function() {
 				$($html).hide().prependTo("#result").fadeIn("slow");		  
 				$( "#result div:nth-child(4)" ).fadeOut('slow');
 				//$itm=$.parseJSON(data.itm);
-				
-				$('#barcode').focus().select();
+				$('#groupName').text('-');
+				$('#qtyMax').text("0 / 0");	
+				$('#qty').val("0");
+				$('#barcode').val("").focus().select();
 			} else {
 				alert(data.message);
 				$('#barcode').select();
@@ -347,14 +317,14 @@ $(document).ready(function() {
 	$('#remark').keyup(function(e){
 		if(e.keyCode == 13)
 		{	
-			$('#qty').val('0').focus().select();
+			save();
 		}/* e.keycode=13 */	
 	});		
 
 	$('#qty').keyup(function(e){
 		if(e.keyCode == 13)
 		{	
-			save();
+			$('#remark').val('0').focus().select();
 		}/* e.keycode=13 */	
 	});
 	
@@ -392,6 +362,15 @@ $(document).ready(function() {
 	});
 });
 //doc ready
+</script>
+
+
+<!--Integers (non-negative)-->
+<script>
+  function numbersOnly(oToCheckField, oKeyEvent) {
+    return oKeyEvent.charCode === 0 ||
+        /\d/.test(String.fromCharCode(oKeyEvent.charCode));
+  }
 </script>
 
 
